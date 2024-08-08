@@ -7,10 +7,8 @@ CREATE TRIGGER valid_email_trigger
 BEFORE UPDATE ON users
 FOR EACH ROW
 BEGIN
-    IF NEW.email LIKE '%+%' THEN
+    IF OLD.email != NEW.email THEN
         SET NEW.valid_email = 0;
-    ELSE
-        SET NEW.valid_email = 1;
     END IF;
 END $$
 
