@@ -3,11 +3,8 @@
 This module contains the list_all function
 """
 
-from pymongo.collection import Collection
-import typing
 
-
-def list_all(mongo_collection: Collection) -> typing.List[typing.Dict]:
+def list_all(mongo_collection):
     """
     Lists all documents in a collection
 
