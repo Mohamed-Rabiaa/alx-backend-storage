@@ -8,7 +8,7 @@ random keys, and it provides basic functionality for managing the cache.
 
 import redis
 import uuid
-from typing import Union
+from typing import Union, Callable, Optional
 
 
 class Cache:
@@ -50,3 +50,60 @@ class Cache:
         self.key = str(uuid.uuid4())
         self._redis.set(self.key, data)
         return self.key
+
+    def get(self, key: str, fn: Optional[Callable] =
+            None) -> Optional[Union[str, bytes, int, float]]:
+        """
+        Retrieve data from the Redis database by key.
+
+        This method retrieves data from Redis using the provided key.
+        If a callable `fn` is provided, it will be used to convert the data
+        back to the desired format. If the key does not exist,
+        None is returned.
+
+        Args:
+            key: The key to retrieve from the Redis cache.
+            fn: A callable used to convert the data back to the desired format.
+
+        Returns:
+            The data associated with the key, potentially converted using `fn`,
+            or None if the key does not exist.
+        """
+        data = self._redis.get(key)
+        if data is None:
+            return None
+        if fn is not None:
+            return fn(data)
+        return data
+
+    def get_str(self, key: str) -> Optional[str]:
+        """
+        Retrieve a string from the Redis database by key.
+
+        This method retrieves data from Redis using the provided key and
+        decodes it as a UTF-8 string.
+
+        Args:
+            key: The key to retrieve from the Redis cache.
+
+        Returns:
+            str: The string associated with the key, or None if the key
+            does not exist.
+        """
+        return self.get(key, lambda d: d.decode("utf-8"))
+
+    def get_int(self, key: str) -> Optional[int]:
+        """
+        Retrieve an integer from the Redis database by key.
+
+        This method retrieves data from Redis using the provided key and
+        converts it to an integer.
+
+        Args:
+            key: The key to retrieve from the Redis cache.
+
+        Returns:
+            int: The integer associated with the key, or None if the key
+            does not exist.
+        """
+        return self.get(key, int)
